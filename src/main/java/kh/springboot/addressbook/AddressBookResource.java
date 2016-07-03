@@ -1,9 +1,6 @@
 package kh.springboot.addressbook;
 
-import java.net.UnknownHostException;
-
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -13,6 +10,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.mongodb.BasicDBObject;
@@ -29,7 +28,15 @@ import kh.springboot.addressbook.domain.Contact;
 @Component
 @Path("/addresses")
 public class AddressBookResource {
-
+	
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(AddressBookResource.class);
+	
+	/**
+	 * Find and increment a sequence value for addressId from the sequences collection.
+	 * @return
+	 * @throws Exception
+	 */
 	public int getNextSequence() throws Exception {
 		DB db = MongoConnection.getMongoDB();
 
@@ -43,8 +50,8 @@ public class AddressBookResource {
 		DBObject result = sequences.findAndModify(
 				new BasicDBObject("_id", "addressId"), //query 
 				fields, // what fields to return
-				null, //sort
-				false, //don't remove selected document
+				null, // no sorting
+				false, //we don't remove selected document
 				new BasicDBObject("$inc", new BasicDBObject("value", 1)), //increment value
 				true, //true = return modified document
 				true); //true = upsert, insert if no matching document
@@ -52,10 +59,18 @@ public class AddressBookResource {
 		return (int)result.get("value");
 	}
 
+	public void logEnvVars(){
+		LOGGER.info("MONGODB_HOST_NAME: " + System.getenv("MONGODB_HOST_NAME"));
+		LOGGER.info("MONGODB_DB_NAME: " + System.getenv("MONGODB_DB_NAME"));
+		LOGGER.info("MONGODB_DB_PORT: " + System.getenv("MONGODB_DB_PORT"));
+	}
+	
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAddress(@PathParam("id") Long id) throws Exception {
+		
+		this.logEnvVars();
 		
 		DB db = MongoConnection.getMongoDB();
 		
@@ -93,3 +108,4 @@ public class AddressBookResource {
 		return response;
 	}
 }
+

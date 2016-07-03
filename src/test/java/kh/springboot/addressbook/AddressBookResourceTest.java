@@ -17,10 +17,10 @@ public class AddressBookResourceTest {
 	
 	@Test
 	public void testGetNextSequence() throws Exception{
-		Long value = addressBook.getNextSequence();
+		int value = addressBook.getNextSequence();
 		
 		//TODO: code is inserting and updating, but not returning a value?
 		
-		assertTrue(value.longValue() > 0);
+		assertTrue(value > 0);
 	}
 }

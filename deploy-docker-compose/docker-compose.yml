@@ -1,0 +1,17 @@
+mongodata:
+  image: mongo:3.2
+  volumes:
+    - /data/db
+  entrypoint: /bin/bash
+mongo:
+  image: mongo:3.2
+  volumes_from:
+    - mongodata
+  ports:
+    - "27017:27017"
+addressbook:
+  image: addressbook
+  ports:
+    - "8080:8080"
+  links:
+    - mongo
