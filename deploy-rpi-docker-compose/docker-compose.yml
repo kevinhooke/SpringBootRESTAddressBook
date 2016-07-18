@@ -1,0 +1,17 @@
+mongodata:
+  image: 192.168.1.66:5000/rpi-mongodb
+  volumes:
+    - /data/db
+  entrypoint: /bin/bash
+mongo:
+  image: 192.168.1.66:5000/rpi-mongodb
+  volumes_from:
+    - mongodata
+  ports:
+    - "27017:27017"
+addressbook:
+  image: 192.168.1.66:5000/rpi-addressbook
+  ports:
+    - "8080:8080"
+  links:
+    - mongo

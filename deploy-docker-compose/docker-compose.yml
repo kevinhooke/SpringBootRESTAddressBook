@@ -1,17 +1,32 @@
-mongodata:
-  image: mongo:3.2
-  volumes:
-    - /data/db
-  entrypoint: /bin/bash
-mongo:
-  image: mongo:3.2
-  volumes_from:
-    - mongodata
-  ports:
-    - "27017:27017"
-addressbook:
-  image: addressbook
-  ports:
-    - "8080:8080"
-  links:
-    - mongo
+version: '2'
+services:
+    mongodata:
+        image: mongo:3.2
+        volumes:
+        - /data/db
+        entrypoint: /bin/bash
+    mongo:
+        image: mongo:3.2
+        volumes_from:
+            - mongodata
+        ports:
+        #kh: only specify internal port, not external, so we can scale with docker-compose scale
+            - "27017"
+    addressbook:
+        image: addressbook
+        ports:
+            - "8080"
+        links:
+            - mongo
+    lb:
+        image: dockercloud/haproxy
+        environment:
+            - STATS_PORT=1936
+            - STATS_AUTH="admin:password"
+        links:
+            - addressbook
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        ports:
+            - 80:80
+            - 1936:1936

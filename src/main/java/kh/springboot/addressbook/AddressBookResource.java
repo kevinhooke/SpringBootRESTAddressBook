@@ -1,5 +1,8 @@
 package kh.springboot.addressbook;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -10,6 +13,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -65,6 +70,12 @@ public class AddressBookResource {
 		LOGGER.info("MONGODB_DB_PORT: " + System.getenv("MONGODB_DB_PORT"));
 	}
 	
+	public String getServerIpAddress() throws UnknownHostException{
+		InetAddress host = InetAddress.getLocalHost();
+		String ip = host.getHostAddress();
+		return ip;
+	}
+	
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -90,8 +101,15 @@ public class AddressBookResource {
 		
 		DBCursor c = db.getCollection("address").find();
 		String jsonString = JSON.serialize(c);
-		
-		Response response = Response.status(Status.OK).entity(jsonString.toString()).build();
+
+		//JSON-P api
+		//JsonReader reader = Json.createReader(new StringReader(jsonString));
+		//JsonStructure json = reader.read();
+		//Json.createObjectBuilder().
+		JSONArray json = new JSONArray(jsonString);
+		json.put(new JSONObject().put("server-ip", this.getServerIpAddress()));
+		System.out.println(json.toString());
+		Response response = Response.status(Status.OK).entity(json.toString()).build();
 		return response;
 	}
 
