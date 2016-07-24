@@ -2,6 +2,7 @@ package kh.springboot.addressbook;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -9,6 +10,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -76,13 +78,36 @@ public class AddressBookResource {
 		return ip;
 	}
 	
+	//@GET
+	//@Path("address")
+	//@Produces(MediaType.APPLICATION_JSON)
+	public Response getAddressByLastName(@QueryParam("lastname") String lastName) throws Exception {
+		
+		this.logEnvVars();
+		
+		DB db = MongoConnection.getMongoDB();
+		
+		DBObject query = new BasicDBObject("lastName", Pattern.compile(lastName));
+		DBCursor c = db.getCollection("address").find(query);
+		String jsonString = JSON.serialize(c);
+		
+		Response response = Response.status(Status.OK).entity(jsonString.toString()).build();
+		return response;
+	}	
+	
+	/**
+	 * GET /addresses/{id}
+	 * 
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
 	@GET
-	@Path("{id}")
+	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAddress(@PathParam("id") Long id) throws Exception {
 		
 		this.logEnvVars();
-		
 		DB db = MongoConnection.getMongoDB();
 		
 		DBObject query = new BasicDBObject("_id", id);
@@ -93,19 +118,26 @@ public class AddressBookResource {
 		return response;
 	}
 	
+
+	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAllAddresses() throws Exception {
+	public Response getAllAddresses(@QueryParam("lastname") String lastName) throws Exception {
 		
 		DB db = MongoConnection.getMongoDB();
+		DBCursor c = null;
 		
-		DBCursor c = db.getCollection("address").find();
+		DBObject query = null;
+		if(lastName != null){
+			query = new BasicDBObject("lastName", Pattern.compile(lastName));
+			c = db.getCollection("address").find(query);
+		}
+		else{		
+			c = db.getCollection("address").find();
+		}
+		
 		String jsonString = JSON.serialize(c);
 
-		//JSON-P api
-		//JsonReader reader = Json.createReader(new StringReader(jsonString));
-		//JsonStructure json = reader.read();
-		//Json.createObjectBuilder().
 		JSONArray json = new JSONArray(jsonString);
 		json.put(new JSONObject().put("server-ip", this.getServerIpAddress()));
 		System.out.println(json.toString());
