@@ -7,6 +7,8 @@ services:
         entrypoint: /bin/bash
     mongo:
         image: mongo:3.2
+        depends_on: 
+            - mongodata
         volumes_from:
             - mongodata
         ports:
@@ -14,17 +16,28 @@ services:
             - "27017"
     addressbook:
         image: addressbook
+        depends_on: 
+            - mongo
+        environment:
+            - MONGODB_DB_NAME=addressbook
         ports:
-            - "8080"
+            - 8080:8080
         links:
             - mongo
+    web:
+        image: docker-web-angularjs
+        ports:
+            - "80"
     lb:
         image: dockercloud/haproxy
+        depends_on: 
+            - addressbook
         environment:
             - STATS_PORT=1936
             - STATS_AUTH="admin:password"
         links:
             - addressbook
+            - web
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
         ports:

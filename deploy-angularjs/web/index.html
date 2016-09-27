@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AngularJS 1.x AddressBook</title>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css"></link>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="node_modules/angular/angular.js"></script>
+	<script src="node_modules/angular-route/angular-route.js"></script>
+	<script src="node_modules/angular-animate/angular-animate.js"></script>
+	<script src="node_modules/jquery/dist/jquery.js"></script>
+	<script src="app/addressbook.js"></script>
+</head>
+<body ng-app="AddressBook">
+
+<div class="container-fluid" ng-controller="AddressBookController">
+	
+    <nav class="navbar navbar-default" role="navigation">
+    	<div class="navbar-header">
+    		<a class="navbar-brand" href="#/">AddressBook</a>
+    	</div>
+    
+    	<!-- Collect the nav links, forms, and other content for toggling -->
+    	<div class="collapse navbar-collapse navbar-ex1-collapse">
+    		<ul class="nav navbar-nav">
+    			<li class="active"><a href="#/">Search</a></li>
+    			<li><a href="#/new">New</a></li>
+    		</ul>
+    	</div>
+    </nav>
+
+	<div ng-view></div>
+
+</div>
+
+</body>
+</html>

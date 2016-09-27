@@ -1,0 +1,37 @@
+<ul class="nav nav-pills nav-stacked">
+    <li class="disabled">
+        <a href="/link1">Link 1</a>
+    </li>
+    <li>
+        <a href="/link2">Link 2</a>
+    </li>
+    <li class="active">
+        <a href="/parent-1">Parent 1</a>
+        <ul class="active nav ">
+            <li>
+                <a href="/child/1">Child 1</a>
+            </li>
+            <li class="active">
+                <a href="/child/2" class="active">Child 2</a>
+                <ul class="nav ">
+                    <li>
+                        <a href="/child/child/1">Child child 1</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    <li class="active">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown Title
+            <span class="caret"/>
+        </a>
+        <ul class="active nav dropdown-menu">
+            <li class="disabled">
+                <a href="/dropdown/child/1">Dropdown Child 1</a>
+            </li>
+            <li class="active">
+                <a href="/dropdown/child/2" class="active">Dropdown Child 2</a>
+            </li>
+        </ul>
+    </li>
+</ul>

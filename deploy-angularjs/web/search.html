@@ -1,0 +1,28 @@
+<div ng-controller="SearchController" data-ng-init="search()">
+    <form class="form-inline">
+        <div class="form-group">
+
+            <label for="lastName">Last name:</label>
+            <input id="lastName" type="text" ng-model="search.lastName" ng-change="search()">
+        </div>
+    </form>
+
+    <!-- search results -->
+    <div class="row">
+        <table class="table table-striped">
+            <thead>
+                <th>Last name</th>
+                <th>Last Name</th>
+                <th>Id</th>
+            </thead>
+
+            <tr ng-repeat="address in addresses">
+                <td>{{ address.lastName }}</td>
+                <td>{{ address.firstName }}</td>
+                <td>{{ address._id }}</td>
+            </tr>
+
+        </table>
+    </div>
+
+</div>
