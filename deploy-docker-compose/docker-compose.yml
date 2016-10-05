@@ -1,4 +1,5 @@
 version: '2'
+  
 services:
     mongodata:
         image: mongo:3.2
@@ -12,7 +13,6 @@ services:
         volumes_from:
             - mongodata
         ports:
-        #kh: only specify internal port, not external, so we can scale with docker-compose scale
             - "27017"
     addressbook:
         image: addressbook
@@ -21,25 +21,38 @@ services:
         environment:
             - MONGODB_DB_NAME=addressbook
         ports:
-            - 8080:8080
+            - "8080"
         links:
             - mongo
     web:
         image: docker-web-angularjs
         ports:
             - "80"
-    lb:
+    lb-web:
         image: dockercloud/haproxy
         depends_on: 
-            - addressbook
+            - web
         environment:
             - STATS_PORT=1936
             - STATS_AUTH="admin:password"
         links:
-            - addressbook
             - web
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
         ports:
             - 80:80
             - 1936:1936
+    lb-addressbook:
+        image: dockercloud/haproxy
+        depends_on: 
+            - addressbook
+        environment:
+            - STATS_PORT=1937
+            - STATS_AUTH="admin:password"
+        links:
+            - addressbook
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        ports:
+            - 8080:80
+            - 1937:1937
